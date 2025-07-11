@@ -1,35 +1,45 @@
 let currentPage = 1;
+let lastQuery = '';
 
 function searchImages() {
     const searchInput = document.getElementById('searchInput');
-    const query = searchInput.value;
+    const query = searchInput.value.trim();
 
-    if (query.trim() === '') {
+    if (query === '') {
         alert('Please enter a search term.');
         return;
     }
+
+    // 🔁 Reset page if new query
+    if (query !== lastQuery) {
+        currentPage = 1;
+        document.getElementById('imageContainer').innerHTML = '';
+    }
+
+    lastQuery = query;
 
     const apiKey = 'Fa1U4fP53h508vwQ-3heXRlmxknIisgNfZID6-kTFrA'; // Replace with your Unsplash API key
     const apiUrl = `https://api.unsplash.com/search/photos?query=${query}&page=${currentPage}&client_id=${apiKey}`;
 
     fetch(apiUrl)
-    .then(response => response.json())
-    .then(data => {
-        displayImages(data.results);
+        .then(response => response.json())
+        .then(data => {
+            if (data.results.length === 0 && currentPage === 1) {
+                document.getElementById('imageContainer').innerHTML = '<p>No results found.</p>';
+                document.querySelector('.button-container').style.display = 'none';
+                return;
+            }
 
-        const buttonContainer = document.querySelector('.button-container');
-        buttonContainer.style.display = 'block';
-    })
+            displayImages(data.results);
 
-    .catch(error => console.error('Error fetching images:', error));
+            const buttonContainer = document.querySelector('.button-container');
+            buttonContainer.style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching images:', error));
 }
 
 function displayImages(images) {
     const imageContainer = document.getElementById('imageContainer');
-
-    if (currentPage === 1) {
-        imageContainer.innerHTML = '';
-    }
 
     images.forEach(image => {
         const imgElement = document.createElement('img');
@@ -43,7 +53,7 @@ function displayImages(images) {
         imageContainer.appendChild(cardElement);
     });
 
-    currentPage++;
+    currentPage++; // Increase after display
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -52,5 +62,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showMore() {
-    searchImages();
+    searchImages(); // Uses lastQuery and currentPage++
 }
