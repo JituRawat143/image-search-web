@@ -10,7 +10,7 @@ function searchImages() {
         return;
     }
 
-    // 🔁 Reset page if new query
+    
     if (query !== lastQuery) {
         currentPage = 1;
         document.getElementById('imageContainer').innerHTML = '';
@@ -53,7 +53,7 @@ function displayImages(images) {
         imageContainer.appendChild(cardElement);
     });
 
-    currentPage++; // Increase after display
+    currentPage++;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
